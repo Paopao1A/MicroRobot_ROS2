@@ -1,0 +1,53 @@
+# ROS2 / colcon build outputs
+build/
+install/
+log/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# C/C++ build outputs
+*.o
+*.so
+*.a
+*.d
+*.elf
+*.bin
+*.map
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# ROS logs
+.ros/log/
+*.bag
+*.db3
+*.mcap
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.old
+*.log
+
+# Docker / local env
+.env
+.env.*
+docker-compose.override.yml
