@@ -61,12 +61,12 @@ speedBindings = {
 class Yahboom_Keybord(Node):
 	def __init__(self,name):
 		super().__init__(name)
-		self.pub = self.create_publisher(Twist,'cmd_vel',1000)
+		self.pub = self.create_publisher(Twist,'cmd_vel',1000)# 创建cmd_vel话题发布者
 		self.declare_parameter("linear_speed_limit",1.0)
 		self.declare_parameter("angular_speed_limit",5.0)
 		self.linenar_speed_limit = self.get_parameter("linear_speed_limit").get_parameter_value().double_value
 		self.angular_speed_limit = self.get_parameter("angular_speed_limit").get_parameter_value().double_value
-		self.settings = termios.tcgetattr(sys.stdin)
+		self.settings = termios.tcgetattr(sys.stdin)# 保存当前终端属性
 	def getKey(self):
 		tty.setraw(sys.stdin.fileno())
 		rlist, _, _ = select.select([sys.stdin], [], [], 0.1)
@@ -126,8 +126,8 @@ def main():
 			twist = Twist()
 			twist.linear.x = speed * x
 			twist.angular.z = turn * th
-			if not stop: yahboom_keyboard.pub.publish(twist)
-			if stop: yahboom_keyboard.pub.publish(Twist())
+			if not stop: yahboom_keyboard.pub.publish(twist)# 发布速度指令
+			if stop: yahboom_keyboard.pub.publish(Twist())# 发布停止指令
 	except Exception as e: print(e)
 	finally: yahboom_keyboard.pub.publish(Twist())
 	termios.tcsetattr(sys.stdin, termios.TCSADRAIN, yahboom_keyboard.settings)
