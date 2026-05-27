@@ -32,6 +32,9 @@ def generate_launch_description():
             'accel_gate': 3.0,
             'yaw_gyro_bias': 0.0,
             'orientation_covariance': 0.05,
+            'auto_calibrate_gyro': True,
+            'gyro_calibration_time': 2.0,
+            'gyro_calibration_min_samples': 50,
         }],
     )
 
@@ -51,7 +54,8 @@ def generate_launch_description():
             'use_imu_orientation': True,
         }],
     )
-
+    
+    # 静态发布坐标系，把base_link也发布到tf中，base_link固定在base_footprint坐标系上0.05m处，跟随base_footprint坐标系移动
     base_footprint_to_base_link = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
