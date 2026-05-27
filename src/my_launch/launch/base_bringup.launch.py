@@ -35,6 +35,9 @@ def generate_launch_description():
             'auto_calibrate_gyro': True,
             'gyro_calibration_time': 2.0,
             'gyro_calibration_min_samples': 50,
+            'gyro_deadband': 0.01,
+            'stationary_gyro_threshold': 0.03,
+            'bias_adaptation_alpha': 0.002,
         }],
     )
 
