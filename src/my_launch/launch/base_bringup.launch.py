@@ -14,7 +14,41 @@ def generate_launch_description():
             'odom_frame': 'odom',
             'base_frame': 'base_footprint',
             'publish_odom': True,
+            'publish_tf': False,
+        }],
+    )
+
+    imu_attitude_filter = Node(
+        package='micro_robot_bringup',
+        executable='imu_attitude_filter',
+        name='imu_attitude_filter',
+        output='screen',
+        parameters=[{
+            'input_imu_topic': 'imu_raw',
+            'output_imu_topic': 'imu/data',
+            'frame_id': 'imu_frame',
+            'alpha': 0.98,
+            'gravity': 9.80665,
+            'accel_gate': 3.0,
+            'yaw_gyro_bias': 0.0,
+            'orientation_covariance': 0.05,
+        }],
+    )
+
+    odom_imu_fusion = Node(
+        package='micro_robot_bringup',
+        executable='odom_imu_fusion',
+        name='odom_imu_fusion',
+        output='screen',
+        parameters=[{
+            'input_odom_topic': 'odom',
+            'input_imu_topic': 'imu/data',
+            'output_odom_topic': 'odometry/filtered',
+            'odom_frame': 'odom',
+            'base_frame': 'base_footprint',
+            'imu_timeout_sec': 0.5,
             'publish_tf': True,
+            'use_imu_orientation': True,
         }],
     )
 
@@ -37,5 +71,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         odom_tf_broadcaster,
+        imu_attitude_filter,
+        odom_imu_fusion,
         base_footprint_to_base_link,
     ])

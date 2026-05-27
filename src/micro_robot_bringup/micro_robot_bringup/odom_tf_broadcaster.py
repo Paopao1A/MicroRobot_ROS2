@@ -39,9 +39,10 @@ class OdomTfBroadcaster(Node):
             10,
         )
 
+        tf_state = 'enabled' if self.publish_tf else 'disabled'
         self.get_logger().info(
-            'bridging %s -> %s, tf %s -> %s'
-            % (self.input_odom_topic, self.output_odom_topic, self.odom_frame, self.base_frame)
+            'bridging %s -> %s, tf %s'
+            % (self.input_odom_topic, self.output_odom_topic, tf_state)
         )
 
     def odom_callback(self, msg):

@@ -20,6 +20,8 @@ setup(
     entry_points={
         'console_scripts': [
             'odom_tf_broadcaster = micro_robot_bringup.odom_tf_broadcaster:main',
+            'imu_attitude_filter = micro_robot_bringup.imu_attitude_filter:main',
+            'odom_imu_fusion = micro_robot_bringup.odom_imu_fusion:main',
         ],
     },
 )
