@@ -16,7 +16,7 @@ def generate_launch_description():
             'publish_odom': True,
             'publish_tf': False,
             'use_system_time_stamp': True,
-            'stamp_offset_sec': 0.05,
+            'stamp_offset_sec': 0.0,
         }],
     )
 
@@ -41,7 +41,7 @@ def generate_launch_description():
             'stationary_gyro_threshold': 0.03,
             'bias_adaptation_alpha': 0.002,
             'use_system_time_stamp': True,
-            'stamp_offset_sec': 0.05,
+            'stamp_offset_sec': 0.0,
         }],
     )
 
@@ -60,7 +60,7 @@ def generate_launch_description():
             'publish_tf': True,
             'use_imu_orientation': True,
             'use_system_time_stamp': True,
-            'stamp_offset_sec': 0.05,
+            'stamp_offset_sec': 0.0,
         }],
     )
 
@@ -78,7 +78,7 @@ def generate_launch_description():
             'replace_invalid_with_inf': True,
             'warn_timeout_sec': 3.0,
             'use_system_time_stamp': True,
-            'stamp_offset_sec': 0.05,
+            'stamp_offset_sec': 0.0,
         }],
     )
     

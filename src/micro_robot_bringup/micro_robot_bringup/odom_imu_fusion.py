@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from copy import deepcopy
+import math
 
 import rclpy
 from rclpy.duration import Duration
@@ -9,6 +10,17 @@ from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from sensor_msgs.msg import Imu
 from tf2_ros import TransformBroadcaster
+
+
+def quaternion_to_yaw(q):
+    siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
+    cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
+    return math.atan2(siny_cosp, cosy_cosp)
+
+
+def yaw_to_quaternion(yaw):
+    half_yaw = yaw * 0.5
+    return (0.0, 0.0, math.sin(half_yaw), math.cos(half_yaw))
 
 
 class OdomImuFusion(Node):
@@ -74,13 +86,16 @@ class OdomImuFusion(Node):
 
         #把odom的四元数姿态orientation替换为imu的，横摆角速度也更新替换为imu的数据
         if self.use_imu_orientation and self.has_fresh_imu(msg):# 如果使用imu数据，且有新鲜的imu数据
-            fused.pose.pose.orientation = self.latest_imu.orientation # 更新odom的orientation
-            fused.pose.covariance[21] = self.latest_imu.orientation_covariance[0]
-            fused.pose.covariance[28] = self.latest_imu.orientation_covariance[4]
+            yaw = quaternion_to_yaw(self.latest_imu.orientation)
+            qx, qy, qz, qw = yaw_to_quaternion(yaw)
+            fused.pose.pose.orientation.x = qx
+            fused.pose.pose.orientation.y = qy
+            fused.pose.pose.orientation.z = qz
+            fused.pose.pose.orientation.w = qw
             fused.pose.covariance[35] = self.latest_imu.orientation_covariance[8]
-            fused.twist.twist.angular = self.latest_imu.angular_velocity # 更新odom的angular_velocity
-            fused.twist.covariance[21] = self.latest_imu.angular_velocity_covariance[0]
-            fused.twist.covariance[28] = self.latest_imu.angular_velocity_covariance[4]
+            fused.twist.twist.angular.x = 0.0
+            fused.twist.twist.angular.y = 0.0
+            fused.twist.twist.angular.z = self.latest_imu.angular_velocity.z
             fused.twist.covariance[35] = self.latest_imu.angular_velocity_covariance[8]
 
         self.odom_pub.publish(fused)# 发布融合之后的odom话题
