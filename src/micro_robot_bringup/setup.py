@@ -22,6 +22,7 @@ setup(
             'odom_tf_broadcaster = micro_robot_bringup.odom_tf_broadcaster:main',
             'imu_attitude_filter = micro_robot_bringup.imu_attitude_filter:main',
             'odom_imu_fusion = micro_robot_bringup.odom_imu_fusion:main',
+            'laser_scan_processor = micro_robot_bringup.laser_scan_processor:main',
         ],
     },
 )

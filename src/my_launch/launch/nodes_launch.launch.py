@@ -3,8 +3,8 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     node = Node(
-        package='Car_Control',
-        executable='Key_Control',
+        package='car_control',
+        executable='key_control',
         output='screen'
     )
     return LaunchDescription([node])

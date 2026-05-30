@@ -3,6 +3,7 @@
 from copy import deepcopy
 
 import rclpy
+from rclpy.duration import Duration
 from geometry_msgs.msg import TransformStamped
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
@@ -22,6 +23,8 @@ class OdomImuFusion(Node):
         self.declare_parameter('imu_timeout_sec', 0.5)
         self.declare_parameter('publish_tf', True)
         self.declare_parameter('use_imu_orientation', True)
+        self.declare_parameter('use_system_time_stamp', True)
+        self.declare_parameter('stamp_offset_sec', 0.05)
 
         self.input_odom_topic = self.get_parameter('input_odom_topic').value
         self.input_imu_topic = self.get_parameter('input_imu_topic').value
@@ -31,6 +34,8 @@ class OdomImuFusion(Node):
         self.imu_timeout_sec = float(self.get_parameter('imu_timeout_sec').value)
         self.publish_tf = bool(self.get_parameter('publish_tf').value)
         self.use_imu_orientation = bool(self.get_parameter('use_imu_orientation').value)
+        self.use_system_time_stamp = bool(self.get_parameter('use_system_time_stamp').value)
+        self.stamp_offset_sec = float(self.get_parameter('stamp_offset_sec').value)
 
         self.latest_imu = None
         self.latest_imu_time = None
@@ -63,6 +68,8 @@ class OdomImuFusion(Node):
     def odom_callback(self, msg):
         fused = deepcopy(msg)
         fused.header.frame_id = self.odom_frame
+        if self.use_system_time_stamp:
+            fused.header.stamp = (self.get_clock().now() + Duration(seconds=self.stamp_offset_sec)).to_msg()
         fused.child_frame_id = self.base_frame
 
         #把odom的四元数姿态orientation替换为imu的，横摆角速度也更新替换为imu的数据

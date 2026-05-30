@@ -3,6 +3,7 @@
 from copy import deepcopy
 
 import rclpy
+from rclpy.duration import Duration
 from geometry_msgs.msg import TransformStamped
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
@@ -19,6 +20,8 @@ class OdomTfBroadcaster(Node):
         self.declare_parameter('base_frame', 'base_footprint') # base话题的frame_id
         self.declare_parameter('publish_odom', True) # 是否发布odom话题
         self.declare_parameter('publish_tf', True) # 是否发布tf话题
+        self.declare_parameter('use_system_time_stamp', True)
+        self.declare_parameter('stamp_offset_sec', 0.05)
 
         self.input_odom_topic = self.get_parameter('input_odom_topic').value
         self.output_odom_topic = self.get_parameter('output_odom_topic').value
@@ -26,6 +29,8 @@ class OdomTfBroadcaster(Node):
         self.base_frame = self.get_parameter('base_frame').value
         self.publish_odom = self.get_parameter('publish_odom').value
         self.publish_tf = self.get_parameter('publish_tf').value
+        self.use_system_time_stamp = bool(self.get_parameter('use_system_time_stamp').value)
+        self.stamp_offset_sec = float(self.get_parameter('stamp_offset_sec').value)
 
         self.odom_pub = None
         if self.publish_odom:
@@ -48,6 +53,8 @@ class OdomTfBroadcaster(Node):
     def odom_callback(self, msg):# odom_raw话题回调函数
         odom_msg = deepcopy(msg) # 复制原始odom数据
         odom_msg.header.frame_id = self.odom_frame # 设置odom话题的frame_id，传过来的是odom_raw话题的frame_id，转换成odom话题的frame_id
+        if self.use_system_time_stamp:
+            odom_msg.header.stamp = (self.get_clock().now() + Duration(seconds=self.stamp_offset_sec)).to_msg()
         odom_msg.child_frame_id = self.base_frame # 设置base话题的frame_id
 
         if self.publish_odom and self.odom_pub is not None: # 发布处理之后的odom数据

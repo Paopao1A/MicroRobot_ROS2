@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'Car_Control'
+package_name = 'car_control'
 
 setup(
     name=package_name,
@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'Key_Control = Car_Control.Key_Control:main'
+            'key_control = car_control.key_control:main',
+            'key_control_2 = car_control.key_control_2:main',
         ],
     },
 )

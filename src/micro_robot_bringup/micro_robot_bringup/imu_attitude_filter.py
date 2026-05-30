@@ -4,6 +4,7 @@ import math
 from copy import deepcopy
 
 import rclpy
+from rclpy.duration import Duration
 from rclpy.node import Node
 from sensor_msgs.msg import Imu
 
@@ -54,6 +55,8 @@ class ImuAttitudeFilter(Node):
         self.declare_parameter('gyro_deadband', 0.01)# 陀螺仪死区,防止静止时还存在零飘
         self.declare_parameter('stationary_gyro_threshold', 0.03)
         self.declare_parameter('bias_adaptation_alpha', 0.002)
+        self.declare_parameter('use_system_time_stamp', True)
+        self.declare_parameter('stamp_offset_sec', 0.05)
 
         self.input_imu_topic = self.get_parameter('input_imu_topic').value
         self.output_imu_topic = self.get_parameter('output_imu_topic').value
@@ -69,6 +72,8 @@ class ImuAttitudeFilter(Node):
         self.gyro_deadband = max(0.0, float(self.get_parameter('gyro_deadband').value))# 陀螺仪死区,防止静止时还存在零飘
         self.stationary_gyro_threshold = max(0.0, float(self.get_parameter('stationary_gyro_threshold').value))# 静止时陀螺仪零飘系数的阈值
         self.bias_adaptation_alpha = clamp(float(self.get_parameter('bias_adaptation_alpha').value), 0.0, 1.0)# 自适应更新零飘系数的alpha值
+        self.use_system_time_stamp = bool(self.get_parameter('use_system_time_stamp').value)
+        self.stamp_offset_sec = float(self.get_parameter('stamp_offset_sec').value)
 
         self.roll = 0.0
         self.pitch = 0.0
@@ -236,6 +241,8 @@ class ImuAttitudeFilter(Node):
         qx, qy, qz, qw = euler_to_quaternion(self.roll, self.pitch, self.yaw)# 计算四元数
 
         out = deepcopy(msg)# 复制原始imu数据
+        if self.use_system_time_stamp:
+            out.header.stamp = (self.get_clock().now() + Duration(seconds=self.stamp_offset_sec)).to_msg()
         out.header.frame_id = self.frame_id
         out.orientation.x = qx
         out.orientation.y = qy
